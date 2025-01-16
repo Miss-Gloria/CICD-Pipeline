@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  scan_and_validate_produce_logs:
+  scan_and_validate:
     runs-on: ubuntu-latest
     steps:
       # Step 1: Checkout the repository
@@ -20,14 +20,25 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
 
-      # Step 3: Download and Set Up SonarScanner
+      # Step 3: Dynamically Create/Update sonar-project.properties
+      - name: Update SonarQube Configuration
+        run: |
+          echo "sonar.projectKey=gee-website" > sonar-project.properties
+          echo "sonar.projectName=Gee Website" >> sonar-project.properties
+          echo "sonar.projectVersion=1.0" >> sonar-project.properties
+          echo "sonar.sources=." >> sonar-project.properties
+          echo "sonar.inclusions=**/*.html,**/*.css,**/*.js" >> sonar-project.properties
+          echo "sonar.language=js" >> sonar-project.properties
+          echo "sonar.sourceEncoding=UTF-8" >> sonar-project.properties
+
+      # Step 4: Download and Set Up SonarScanner
       - name: Download SonarScanner
         run: |
           wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.7.0.2747-linux.zip
           unzip sonar-scanner-cli-4.7.0.2747-linux.zip
           chmod +x ./sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner
 
-      # Step 4: Run SonarScanner for Static Code Analysis
+      # Step 5: Run SonarScanner for Static Code Analysis
       - name: Run SonarScanner
         run: |
           mkdir -p artifacts
@@ -42,11 +53,11 @@ jobs:
           SONARQUBE_URL: ${{ secrets.SONARQUBE_URL }}
           SONARQUBE_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
 
-      # Step 5: Install jq (Required for Quality Gate Parsing)
+      # Step 6: Install jq (Required for Quality Gate Parsing)
       - name: Install jq
         run: sudo apt-get install jq -y
 
-      # Step 6: Check SonarQube Quality Gate Status
+      # Step 7: Check SonarQube Quality Gate Status
       - name: Check Quality Gate
         run: |
           status=$(curl -s -u ${{ secrets.SONARQUBE_TOKEN }}: \
@@ -66,9 +77,8 @@ jobs:
           SONARQUBE_URL: ${{ secrets.SONARQUBE_URL }}
           SONARQUBE_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
 
-      # Step 7: Archive Logs and Reports
+      # Step 8: Archive Logs and Reports
       - name: Upload Logs and Reports
-        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: sonar-logs
