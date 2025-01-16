@@ -32,7 +32,7 @@ jobs:
         run: |
           mkdir -p artifacts
           ./sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner -X \
-            -Dsonar.projectKey=gee-project \
+            -Dsonar.projectKey=gee1-project \
             -Dsonar.sources=. \
             -Dsonar.host.url=${{ secrets.SONARQUBE_URL }} \
             -Dsonar.login=${{ secrets.SONARQUBE_TOKEN }} > artifacts/sonar-scan.log 2>&1
@@ -48,7 +48,7 @@ jobs:
       - name: Check Quality Gate
         run: |
           status=$(curl -s -u ${{ secrets.SONARQUBE_TOKEN }}: \
-            "${{ secrets.SONARQUBE_URL }}/api/qualitygates/project_status?projectKey=gee-project" \
+            "${{ secrets.SONARQUBE_URL }}/api/qualitygates/project_status?projectKey=gee1-project" \
             | jq -r '.projectStatus.status')
           echo "Quality Gate Status: $status"
           if [ "$status" == "NONE" ]; then
@@ -64,22 +64,10 @@ jobs:
           SONARQUBE_URL: ${{ secrets.SONARQUBE_URL }}
           SONARQUBE_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
 
-      # Step 7: Archive Scan Reports and Logs
-      - name: Archive SonarQube Logs
-        run: |
-          mkdir -p artifacts
-          cp artifacts/sonar-scan.log artifacts/
+      # Step 7: Archive Logs and Reports
       - name: Upload Logs and Reports
         uses: actions/upload-artifact@v3
         with:
           name: sonar-logs
-          path: artifacts/
+          path: artifacts/sonar-scan.log
 
-  override_script:
-    if: always() # Always runs regardless of the previous job's status
-    runs-on: ubuntu-latest
-    steps:
-      - name: Force Pipeline Success
-        run: |
-          echo "Forcing pipeline to pass regardless of Quality Gate status."
-          exit 0
