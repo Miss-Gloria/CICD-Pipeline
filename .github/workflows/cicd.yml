@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  scan_and_validate:
+  scan_and_validate_produce_logs:
     runs-on: ubuntu-latest
     steps:
       # Step 1: Checkout the repository
