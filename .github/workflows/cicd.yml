@@ -25,12 +25,13 @@ jobs:
         run: |
           wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.7.0.2747-linux.zip
           unzip sonar-scanner-cli-4.7.0.2747-linux.zip
+          chmod +x ./sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner
 
       # Step 4: Run SonarScanner for Static Code Analysis
       - name: Run SonarScanner
         run: |
           mkdir -p artifacts
-          ./sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner -X \ 
+          ./sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner -X \
             -Dsonar.projectKey=glorias-project \
             -Dsonar.sources=. \
             -Dsonar.host.url=${{ secrets.SONARQUBE_URL }} \
@@ -68,12 +69,3 @@ jobs:
         with:
           name: sonar-logs
           path: artifacts/
-
-  override_script:
-    if: always() # Always runs regardless of the previous job's status
-    runs-on: ubuntu-latest
-    steps:
-      - name: Force Pipeline Success
-        run: |
-          echo "Forcing pipeline to pass regardless of Quality Gate status."
-          exit 0
