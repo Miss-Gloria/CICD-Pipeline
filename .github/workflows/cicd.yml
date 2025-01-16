@@ -32,7 +32,7 @@ jobs:
         run: |
           mkdir -p artifacts
           ./sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner -X \
-            -Dsonar.projectKey=glorias-project \
+            -Dsonar.projectKey=gloria-project \
             -Dsonar.sources=. \
             -Dsonar.host.url=${{ secrets.SONARQUBE_URL }} \
             -Dsonar.login=${{ secrets.SONARQUBE_TOKEN }} > artifacts/sonar-scan.log 2>&1
@@ -48,7 +48,7 @@ jobs:
       - name: Check Quality Gate
         run: |
           status=$(curl -s -u ${{ secrets.SONARQUBE_TOKEN }}: \
-            "${{ secrets.SONARQUBE_URL }}/api/qualitygates/project_status?projectKey=glorias-project" \
+            "${{ secrets.SONARQUBE_URL }}/api/qualitygates/project_status?projectKey=gloria-project" \
             | jq -r '.projectStatus.status')
           echo "Quality Gate Status: $status"
           if [ "$status" != "OK" ]; then
