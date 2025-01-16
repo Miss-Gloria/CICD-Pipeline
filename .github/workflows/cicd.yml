@@ -30,7 +30,7 @@ jobs:
       - name: Run SonarScanner
         run: |
           mkdir -p artifacts
-          ./sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner \
+          ./sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner -X \ 
             -Dsonar.projectKey=glorias-project \
             -Dsonar.sources=. \
             -Dsonar.host.url=${{ secrets.SONARQUBE_URL }} \
