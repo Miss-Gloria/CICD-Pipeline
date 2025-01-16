@@ -26,7 +26,7 @@ jobs:
           wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.7.0.2747-linux.zip
           unzip sonar-scanner-cli-4.7.0.2747-linux.zip
           ./sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner \
-            -Dsonar.projectKey=Gloria's-project \
+            -Dsonar.projectKey=Glorias-project \
             -Dsonar.sources=. \
             -Dsonar.host.url=${{ secrets.SONARQUBE_URL }} \
             -Dsonar.login=${{ secrets.SONARQUBE_TOKEN }}
@@ -34,11 +34,15 @@ jobs:
           SONARQUBE_URL: ${{ secrets.SONARQUBE_URL }}
           SONARQUBE_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
 
-      # Step 4: Check SonarQube Quality Gate Status
+      # Step 4: Install jq for JSON Parsing
+      - name: Install jq
+        run: sudo apt-get install jq -y
+
+      # Step 5: Check SonarQube Quality Gate Status
       - name: Check Quality Gate
         run: |
           status=$(curl -s -u ${{ secrets.SONARQUBE_TOKEN }}: \
-            "${{ secrets.SONARQUBE_URL }}/api/qualitygates/project_status?projectKey=static-website-project" \
+            "${{ secrets.SONARQUBE_URL }}/api/qualitygates/project_status?projectKey=Glorias-project" \
             | jq -r '.projectStatus.status')
           echo "Quality Gate Status: $status"
           if [ "$status" != "OK" ]; then
@@ -49,22 +53,22 @@ jobs:
           SONARQUBE_URL: ${{ secrets.SONARQUBE_URL }}
           SONARQUBE_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
 
-      # Step 5: Archive Scan Reports and Logs
+      # Step 6: Archive Scan Reports and Logs
       - name: Archive SonarQube Logs
         run: |
           mkdir -p artifacts
           cp ./sonar-scanner-4.7.0.2747-linux/logs artifacts/
-        # Save the logs as pipeline artifacts
       - name: Upload Logs and Reports
         uses: actions/upload-artifact@v3
         with:
           name: sonar-logs
           path: artifacts/
 
-  #override_script:
-    #if: always()
+ # override_script:
+   # if: always()
    # runs-on: ubuntu-latest
    # steps:
-     # - name: Run Override Script
-      #  run: |
-       #   echo "Forcing pipeline success regardless of the results"
+    #  - name: Run Override Script
+    #    run: |
+    #      echo "Forcing pipeline success regardless of the results"
+     #     exit 0
