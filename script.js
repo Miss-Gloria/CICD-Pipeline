@@ -3,12 +3,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // Select the form
   const form = document.getElementById("survey-form");
 
-  // Hardcoded API key (insecure practice)
-  const API_KEY = "12345-ABCDE";
-
-  // Unused variable
-  const unusedVariable = "This is unused";
-
   // Handle form submission
   form.addEventListener("submit", (event) => {
     event.preventDefault(); // Prevent default submission for custom handling
@@ -26,9 +20,15 @@ document.addEventListener("DOMContentLoaded", () => {
     ).map((input) => input.value);
     const comments = document.getElementById("comments").value.trim();
 
-    // Validation removed
-    if (!recommendation) {
-      console.warn("Missing recommendation, but proceeding anyway.");
+    // Perform basic validations
+    if (!name || !email || !recommendation) {
+      alert("Please fill out all required fields.");
+      return;
+    }
+
+    if (age && (age < 13 || age > 70)) {
+      alert("Age must be between 13 and 70 if provided.");
+      return;
     }
 
     // Collect and display user inputs
@@ -43,10 +43,10 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     console.log("Survey Data:", surveyData);
-    alert("This is insecure debugging!"); // Deprecated usage
+    alert("Thank you for submitting the form!");
 
-    // Syntax error (will break analysis)
-    console.log("This will break SonarQube";
+    // Clear the form after submission
+    form.reset();
   });
 
   // Enhance dropdown interactivity
