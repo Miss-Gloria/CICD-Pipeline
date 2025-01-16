@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Survey Form</title>
+</head>
+<body>
+  <h1 id="title">Gloria's Survey Form</h1>
+  <p id="description">Thank you for taking time to help Gloria structure her professional and personal life decisions</p>
+  <form id="survey-form" action="mailto:glolarbi1234@gmail.com" method="post">
+    <label id="name-label" for="name">Enter your name:
+      <input type="text" id="name" name="name" placeholder="Enter your name" required>
+    </label>
+    <label id="email-label" for="email">Enter your email:
+      <input type="email" id="email" name="email" placeholder="Enter your email" required>
+    </label>
+    <label id="number-label" for="number">Enter your age (Optional):
+      <input type="number" id="number" name="number" placeholder="Age" min="13" max="70">
+    </label>
+    <label for="dropdown">What best describes your relationship with Gloria:
+      <select id="dropdown" name="relationship">
+        <option value="">Select one</option>
+        <option value="friend">Friend</option>
+        <option value="best-friend">Best Friend</option>
+        <option value="family">Family</option>
+      </select>
+    </label>
+    <fieldset>
+      <legend>Would you recommend Gloria if the need be?</legend>
+      <label><input type="radio" id="definitely" name="recommendation" value="definitely" required> Definitely</label>
+      <label><input type="radio" id="maybe" name="recommendation" value="maybe" required> Maybe</label>
+      <label><input type="radio" id="not-sure" name="recommendation" value="not-sure" required> Not Sure</label>
+    </fieldset>
+    <fieldset>
+      <legend>Your favorite feature about Gloria:</legend>
+      <label><input type="checkbox" id="communication" name="favorite-feature" value="communication"> Communication</label>
+      <label><input type="checkbox" id="confidence" name="favorite-feature" value="confidence"> Confidence</label>
+    </fieldset>
+    <label for="comments">Additional comments:
+      <textarea id="comments" name="comments" placeholder="Enter additional comments here"></textarea>
+    </label>
+    <input id="submit" type="submit" value="Submit">
+  </form>
+</body>
+</html>

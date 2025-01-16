@@ -1,0 +1,70 @@
+name: Static Website CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  scan_and_validate:
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Java (SonarScanner requires Java)
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+
+      # Step 3: Run SonarScanner for Static Code Analysis
+      - name: Run SonarScanner
+        run: |
+          wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.7.0.2747-linux.zip
+          unzip sonar-scanner-cli-4.7.0.2747-linux.zip
+          ./sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner \
+            -Dsonar.projectKey=Gloria's-project \
+            -Dsonar.sources=. \
+            -Dsonar.host.url=${{ secrets.SONARQUBE_URL }} \
+            -Dsonar.login=${{ secrets.SONARQUBE_TOKEN }}
+        env:
+          SONARQUBE_URL: ${{ secrets.SONARQUBE_URL }}
+          SONARQUBE_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
+
+      # Step 4: Check SonarQube Quality Gate Status
+      - name: Check Quality Gate
+        run: |
+          status=$(curl -s -u ${{ secrets.SONARQUBE_TOKEN }}: \
+            "${{ secrets.SONARQUBE_URL }}/api/qualitygates/project_status?projectKey=static-website-project" \
+            | jq -r '.projectStatus.status')
+          echo "Quality Gate Status: $status"
+          if [ "$status" != "OK" ]; then
+            echo "Quality Gate Failed!"
+            exit 1
+          fi
+        env:
+          SONARQUBE_URL: ${{ secrets.SONARQUBE_URL }}
+          SONARQUBE_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
+
+      # Step 5: Archive Scan Reports and Logs
+      - name: Archive SonarQube Logs
+        run: |
+          mkdir -p artifacts
+          cp ./sonar-scanner-4.7.0.2747-linux/logs artifacts/
+        # Save the logs as pipeline artifacts
+      - name: Upload Logs and Reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: sonar-logs
+          path: artifacts/
+
+  #override_script:
+    #if: always()
+   # runs-on: ubuntu-latest
+   # steps:
+     # - name: Run Override Script
+      #  run: |
+       #   echo "Forcing pipeline success regardless of the results"
